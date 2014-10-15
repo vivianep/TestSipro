@@ -1,0 +1,97 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+ <script type="text/javascript">
+  function goBack()
+  {
+window.open("@{Application.index()}","_top");
+  }
+  function open_win1()
+{
+window.open("@{Application.getDiagCadastro()}","_top");
+}
+  function open_win2()
+{
+window.open("@{Application.consultarFicha()}","_top");
+}
+  function open_win3()
+{
+window.open("@{Application.getDiagGPrivado()}","_top");
+}
+	  function open_win4()
+{
+window.open("@{Application.adicionarConsulta()}","_top");
+}
+	function open_win5()
+{
+window.open("@{Application.verSolicitacao()}","_top");
+}
+
+</script>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+        
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li class="selected"><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            <li><a href="@{Application.getDiagCadastro()}">Novo Paciente</a></li>
+            <li><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+            <li><a href="@{Application.getDiagGPrivado()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+        <div id="mainbox"> 
+
+            <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.logout()}">sair</a>&nbsp; &nbsp;</div>
+            <div id="Header1">MENU PRINCIPAL</div>
+            <div id="Descricao">Bem Vindo(a) ${med?.getNome()}!</div>
+
+            <table width="50%" style="text-align:center;">
+                <tr>
+                    <td>
+                        <br/>
+                        <br/>
+                        <form action="">
+                            <fieldset>
+                                <legend>Ações:</legend>
+                                <table>
+                                     <tr><td style="text-align:left;"><input style="width:100%;" type = "button" value="cadastrar novo paciente" onClick="open_win1()" /></td></tr>
+                                     <tr><td style="text-align:left;"><input style="width:100%;" type = "button" value="consultar ficha de paciente" onClick="open_win2()" /></td></tr>
+                                     <tr><td style="text-align:left;"><input style="width:100%;" type = "button" value="gerar relatórios" onClick="open_win3()"/></td></tr>
+                                     <tr><td style="text-align:left;"><input style="width:100%;" type = "button" value="adicionar consulta" onClick="open_win4()"/></td></tr>
+                                     #{if med?.getAdmin()}<tr><td style="text-align:left;"><input style="width:100%;" type = "button" value="ver solicitações" onClick="open_win5()"/></td></tr>#{/if}
+                                </table>
+                            </fieldset>
+                        </form>	
+                    </td>
+
+                </tr>
+            </table>
+                
+            <br/>
+            
+            #{if flash.success}
+            <h2 class="success">${flash.success}</h2>
+	        #{/if}
+                
+            <br/>
+            <br/>
+
+        </div>
+
+        <div id="rodape">
+                <br/>
+                <b>DAMGeR</b>
+                <br/>
+                Sistema de Prontuário
+                <br/>
+        </div>

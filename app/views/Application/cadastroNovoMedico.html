@@ -1,0 +1,83 @@
+#{extends 'main.html' /}
+#{set title:'Cadastrar Medico' /}
+       
+<script type="text/javascript">
+function goBack()
+{
+window.open("@{Application.index()}","_top");
+}
+</script>
+
+  <div id="header">
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+      </div>
+        
+            <div id="Header3"><br/>
+                <ul id="menu">
+                <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+                    <li><a href="@{Application.index()}">Home</a></li>
+                    <li class="selected"><a href="@{Application.cadastroNovoMedico()}">Cadastro</a></li>
+                    <li><a href="@{Application.getDiagG()}">Relatorios</a></li>
+                    <li><a href="@{Application.contatoAdmin()}">Contato</a></li>
+                </ul>
+            </div>
+    </div>
+
+<div id="mainbox"> 
+            <br/>
+            
+            <div id="Header1">Cadastro</div>
+            <div id="Descricao">Para a realização do cadastro, você deverá submeter seus dados nos campos abaixo. Sua
+solicitação será enviada para a equipe responsável pelo cadastramento, e caso seja aceito,
+você receberá um e-mail confirmando seu cadastramento, bem como seu login e senha. 
+Obs: O cadastro só será válido para profissionais da área(Médicos).</div>
+
+            <table width="70%" style="text-align:center;">
+                <tr>
+                    <td>
+                        <br/>
+                            #{ifErrors}
+                            <div class="error">
+                            <h2>Por favor corrija os seguintes erros:</h2>
+                            </div>
+                            #{/ifErrors}
+                            
+                        <br/>
+                        <form method="GET" action="@{Application.addsolicitacao()}">
+                            <fieldset>
+                                <legend>Dados Cadastrais:</legend>
+                                <table>
+                                    <tr><td style="text-align:right;"> Nome:</td><td style="text-align:left;"><input type = "text" name="nome" value="${params.nome}"><span class="error">#{error 'nome' /} </span> </td></tr>
+                                    <tr><td style="text-align:right;"> Senha:</td><td style="text-align:left;"><input type = "password" name="senha1" value="${params.senha1}"/><span class="error">#{error 'senha1' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> Confirmar Senha:</td><td style="text-align:left;"><input type = "password" name="senha2" value="${params.senha2}"/><span class="error">#{error 'senha2' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> Especialização:</td><td style="text-align:left;"><input type = "text" name="especializacao" value="${params.especializacao}"><span class="error">#{error 'especializacao' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> CRM:</td><td style="text-align:left;"><input id="crm" type = "text" name= "crm" value="${params.crm}"/><span class="error">#{error 'crm' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> Departamento:</td><td style="text-align:left;"><input type = "text" name="departamento" value="${params.departamento}"/><span class="error">#{error 'departamento' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> E-mail:</td><td style="text-align:left;"><input type = "email" name="email" value="${params.email}"><span class="error">#{error 'email' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> Telefone:</td><td style="text-align:left;"><input id="telefone" type = "text" name="telefone" value="${params.telefone}"><span class="error">#{error 'telefone' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"> Justificativa:</td><td style="text-align:left;"><textarea rows="10" name ="justificativa">${params.justificativa}</textarea><span class="error">#{error 'justificativa' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"><input type = "submit" value="Enviar"/></td><td style="text-align:left;"><input type = "button" value="Voltar" onclick="goBack()"/></td></tr>
+                                </table>
+                            </fieldset>
+                        </form>	
+                    </td>
+                               
+                </tr>
+            </table>
+
+            <br/>
+            <br/>
+            <br/>
+        </div>
+
+            <div id="rodape">
+                <br/>
+                <b>DAMGeR</b>
+                <br/>
+                Sistema de Prontuário
+                <br/>
+            </div>

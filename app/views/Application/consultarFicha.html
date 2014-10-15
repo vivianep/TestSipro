@@ -1,0 +1,73 @@
+#{extends 'main.html' /}
+#{set title:'Consultar Ficha' /}
+
+<script type="text/javascript">
+  function goBack()
+  {
+window.open("@{Application.telaPrincipal()}","_top");
+  }
+</script>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+        
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            <li><a href="@{Application.getDiagCadastro()}">Novo Paciente</a></li>
+            <li class="selected"><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+            <li><a href="@{Application.gerarRelatorioPrivado()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+        <div id="mainbox"> 
+
+            <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.index()}">sair</a>&nbsp; &nbsp;</div>
+            <div id="Header1">Consultar Paciente Cadastrado</div>
+            <div id="Descricao">Preencha os campos para buscar um paciente especifico</div>
+          
+            <table width="70%" style="text-align:center;">
+                <tr>
+                    <td>
+                        <br/>
+                        <br/>
+                        <form action="@{Application.buscarPacientes()}" method="GET">
+                            <fieldset>
+                                <table>
+                                    <tr><td style="text-align:right;">Nome:</td><td style="text-align:left;"><input type = "text" name="nome"></td></tr>
+                                    <tr><td style="text-align:right;">Prontuário:</td><td style="text-align:left;"><input type = "text" name="prontuario"></td></tr>
+                                    <tr><td style="text-align:right;">Data da consulta:</td><td width="70%" style="text-align:left;"><input name="dia" type="text" maxlength="2" size="2" ><input name="mes" type="text" maxlength="2" size="2" ><input name="ano" type="text" maxlength="4" size="4" >&nbsp;(dd/mm/aaaa)</td></tr>
+                                    <tr><td style="text-align:right;"><input type = "submit" value="Buscar"" /></td><td style="text-align:left;"><input type = "button" value="Voltar" onclick="goBack()"/></td></tr>
+                                </table>
+                            </fieldset>
+                        </form>	
+                    </td>
+
+                </tr>
+            </table>
+
+            <br/>
+            <br/>
+            <br/>
+                
+        </div>
+            
+            
+        <div id="rodape">
+            <br/>
+            <b>DAMGeR</b>
+            <br/>
+            Sistema de Prontuário
+            <br/>
+        </div>
+            
+            
+            

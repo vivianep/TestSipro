@@ -1,0 +1,4 @@
+14 Oct 2014 15:19:35,424 INFO  ~ Starting C:\play-1.2.3\sipro\.
+14 Oct 2014 15:19:38,136 WARN  ~ You're running Play! in DEV mode
+14 Oct 2014 15:19:47,508 INFO  ~ Connected to jdbc:h2:mem:play;MODE=MYSQL;LOCK_MODE=0
+14 Oct 2014 15:19:47,547 INFO  ~ Application 'sipro' is now started !

@@ -1,0 +1,69 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li class="selected"><a href="@{Application.index()}">Home</a></li>
+            <li><a href="@{Application.cadastroNovoMedico()}">Cadastro</a></li>
+            <li><a href="@{Application.getDiagG()}">Relatórios</a></li>
+            <li><a href="@{Application.contatoAdmin()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+
+<div id="mainbox"> 
+
+
+    <br/>
+    <div id="Header1" style="border-radius: 10px 10px 10px 10px;"> O SIPRO é um sistema de prontuário médico com o objetivo de facilitar o acesso a informações
+        de pacientes, tanto para dados estatísticos quanto para consultas de profissionais da área. </div>
+    <div style="margin-top: 25%; width:70%; text-align:center; margin-left: auto; margin-right: auto;">  
+
+	    #{if flash.success}
+        <h2 class="success">${flash.success}</h2>
+	    #{/if}
+            #{if flash.error}
+        <h2 class="error">${flash.error}</h2>
+            #{/if}
+
+        #{ifErrors}
+        <div class="error">
+            <h2>Por favor corrija os seguintes erros:</h2>
+        </div>
+        #{/ifErrors}
+
+        <form action="@{Application.permitirLogin()}" method="GET">
+            <fieldset>
+            <legend>Login:</legend>
+            <table>
+                <tr><td style="text-align:right;"><label for="email">E-mail:</label>
+                    </td><td style="text-align:left;"><input id="email" type = "text" name="email" value="${params.email}"/> <span class="error">#{error 'email' /} </span></td></tr> 
+                <tr><td style="text-align:left;"> Senha:</td><td style="text-align:left;"><input type = "password" name="senha" value="${params.senha}"/> <span class="error">#{error 'senha' /} </span></td></tr>
+                <tr><td style="text-align:right;"><input type = "submit" value="OK" /></td><td  style="text-align:left;"><a href="@{Application.esqueciSenha()}">Esqueci a senha!</a></td></tr>
+            </table>
+            </fieldset>
+        </form>	
+    </div>
+</div>
+
+<div id="rodape">
+    <br/>
+    <b>DAMGeR</b>
+    <br/>
+    Sistema de Prontuário
+    <br/>
+</div>

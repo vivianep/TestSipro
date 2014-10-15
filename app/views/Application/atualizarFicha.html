@@ -1,0 +1,117 @@
+#{extends 'main.html' /}
+#{set title:'Cadastro de Ficha' /}
+
+<script type="text/javascript">
+    function goBack()
+    {
+        window.open("@{Application.resultadoFicha()}","_top");
+    }
+    function open_consult()
+    {
+        window.open("@{Application.adicionarConsulta(pacienteEscolhido.getProntuario())}","_top");
+    }
+</script>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            <li><a href="@{Application.getDiagCadastro()}">Novo Paciente</a></li>
+            <li><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+            <li><a href="@{Application.getDiagGPrivado()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="mainbox"> 
+
+
+    <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.index()}">sair</a>&nbsp; &nbsp;</div>
+    <div id="Header1">Cadastro de novo paciente</div>
+    <div id="Descricao">Altere os dados do paciente conforme desejado ou adicione uma consulta</div>
+    <table width="70%" style="text-align:center;">
+        <tr>
+            <td>
+                <br/>
+                <br/>
+                <form action="@{Application.alterarFicha()}"  method="GET">
+                    <fieldset>
+                        <legend>Dados Cadastrais: ${pacienteEscolhido.getDiagnostico1()}</legend>
+                        <table>
+                            <input type="hidden" id="prontuario" name="prontuario" value="${pacienteEscolhido.getProntuario()}" />
+                            <tr><td style="text-align:right;">Nome:</td><td style="text-align:left;">${pacienteEscolhido.getNome()}</td></tr>
+                            <tr><td style="text-align:right;">Prontuario:</td><td style="text-align:left;">${pacienteEscolhido.getProntuario()}</td></tr>
+                            <tr><td style="text-align:right;"><label for="diagnostico1">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico1" style="width: 250px"><OPTION SELECTED>${pacienteEscolhido?.getDiagnostico1()} #{list items:diagnosticos, as:'d'} #{if d.nome != pacienteEscolhido.getDiagnostico1()} <option>${d.nome} #{/if} #{/list}</select></td></tr>
+                            <tr><td style="text-align:right;"><label for="diagnostico2">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico2" style="width: 250px"><OPTION SELECTED>${pacienteEscolhido?.getDiagnostico2()} #{list items:diagnosticos, as:'d'} #{if d.nome != pacienteEscolhido.getDiagnostico2()} <option>${d.nome} #{/if} #{/list}</select></td></tr>
+                            <tr><td style="text-align:right;"><label for="diagnostico3">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico3" style="width: 250px"><OPTION SELECTED>${pacienteEscolhido?.getDiagnostico3()} #{list items:diagnosticos, as:'d'} #{if d.nome != pacienteEscolhido.getDiagnostico3()} <option>${d.nome} #{/if} #{/list}</select></td></tr>
+                            <tr><td style="text-align:right;"><label for="telefone">Telefone: </label></td><td style="text-align:left;"><input type = "text" name="telefone" value="${pacienteEscolhido.getTelefone()}"></td></tr>
+                            <tr><td style="text-align:right;"> Sexo: </td><td style="text-align:left;"> 
+                                    #{if pacienteEscolhido.getSexo() == "m"}
+                                    Masculino
+                                    #{/if}
+                                    #{if pacienteEscolhido.getSexo() == "f"}
+                                    Feminino
+                                    #{/if} </td></tr>
+                            <tr><td style="text-align:right;"><label for="procedencia">Procedência: </label></td><td style="text-align:left;"><input type = "text" name="procedencia" value="${pacienteEscolhido.getProcedencia()}"></td></tr>
+                            <tr><td style="text-align:right;"><label for="endereco">Endereço: </label></td><td style="text-align:left;"><input type = "text" name="endereco" value="${pacienteEscolhido.getEndereco()}"></td></tr>
+                            <tr><td style="text-align:right;"><label for="historico">Histórico Familiar: </td><td style="text-align:left;">
+                                    <input type="radio" name="historico" value="true" 
+                                           #{if pacienteEscolhido.isHistorico()}
+                                           checked="yes"
+                                           #{/if}  /> Sim                                    		
+                                           <input type="radio" name="historico" value="false" 
+                                           #{if !pacienteEscolhido.isHistorico()}
+                                           checked="yes"
+                                           #{/if}  /> Não</td></tr>
+                            <tr><td style="text-align:right;">Nascimento: </td><td style="text-align:left;">${pacienteEscolhido.getDatanasc().toString()} </td></tr>
+                            <tr><td style="text-align:right;">Histórico de Consultas: </td><td > </td></tr>
+
+                            <tr><td style="text-align:right;" colspan="2">
+                                    #{if !consultas.isEmpty()}
+                                    <table id ="Relatorio">
+                                        <tr> <th>crm do medico</th> <th>observacao</th> <th>data</th> </tr>
+                                        #{list items:consultas, as:'p'}
+                                        <tr #{if p_parity=="odd"} class="alt" #{/if}> <td>${p.crm}</td> <td>${p.observacao}</td> <td>${p.data.toString()}</td></tr>
+                                        #{/list}
+                                    </table> 
+                                    #{/if}
+                                    #{if consultas.isEmpty()}
+                                    <div class="error">
+                                        <h2 style ="margin:0px 0px 0px 0px;">Não existe historico de consultas para este paciente!</h2>
+                                        <br/>
+                                    </div>
+                                    #{/if}
+
+                                </td></tr>
+
+                            <tr><td style="text-align:right;"><input type = "submit" value="Atualizar" /></td><td style="text-align:left;"><input type = "button" value="Voltar" onclick="goBack()"/><input type = "button" value="Nova Consulta" onclick="open_consult()"/></td></tr>
+                        </table>
+                    </fieldset>
+                </form>	
+            </td>
+
+        </tr>
+    </table>
+
+    <br/>
+    <br/>
+    <br/>
+</div>
+
+<div id="rodape">
+    <br/>
+    <b>DAMGeR</b>
+    <br/>
+    Sistema de Prontuário
+    <br/>
+</div>
+

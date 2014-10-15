@@ -1,0 +1,68 @@
+#{extends 'main.html' /}
+#{set title:'Relatorio Lista' /}       
+
+        <script type="text/javascript">
+            function goBack()
+            {
+            window.open("@{Application.telaPrincipal()}","_top");
+            }
+        </script>
+        
+        <div id="header">
+            <div id="logo">
+                <div id="logo_text">
+                    <!-- class="logo_colour", allows you to change the colour of the text -->
+                    <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+                </div>
+            </div>
+                
+            <div id="Header3"><br/>
+                <ul id="menu">
+                    <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+           			<li><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            		<li><a href="@{Application.getDiagCadastro()}">Novo Paciente</a></li>
+           			<li><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+           			<li><a href="@{Application.getDiagGPrivado()}">Relatorios</a></li>
+            		<li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+                </ul>
+            </div>
+        </div>
+            
+        <div id="mainbox"> 
+            
+            <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.index()}">sair</a>&nbsp; &nbsp;</div>
+            <div id="Header1" style="border-radius: 10px 10px 10px 10px;">Solicitações Pendentes</div>
+                
+            <table style="text-align:center; width:70%;">
+                <tr>
+                    <td style="text-align:left">
+                        <br/>
+                        <br/>
+                            
+                        <table id ="Relatorio" >
+                            <tr> <th>Nome</th><th>crm</th><th>Especializacao</th><th>Departamento</th><th>Justificativa</th><th>Telefone</th><th>Situação</th> </tr>
+                            #{list items:sList, as:'s'}
+    						<tr #{if s_parity=="odd"} class="alt" #{/if} ><td>${s.nome}</td><td>${s.crm}</td><td>${s.especializacao}</td><td>${s.departamento}</td><td>${s.justificativa}</td><td>${s.telefone}</td>
+    						<td> <a href="@{Application.aceitarMedico(s.crm)}">Aceitar</a> <a href="@{Application.recusarMedico(s.crm)}">Recusar</a></td> </tr>
+    						#{/list}
+                        </table>
+                        
+                        <input type = "button" value="Voltar" onclick="goBack()"/>
+                        	
+                        
+                            
+                        <br/>
+                        <br/>
+                        <br/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+            
+        <div id="rodape">
+            <br/>
+            <b>DAMGeR</b>
+            <br/>
+            Sistema de Prontuário
+            <br/>
+        </div>

@@ -1,0 +1,87 @@
+#{extends 'main.html' /}
+#{set title:'Consultar Ficha' /}
+
+<script type="text/javascript">
+    function goBack()
+    {
+        window.open("@{Application.telaPrincipal()}","_top");
+    }
+</script>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            <li><a href="@{Application.cadastroFicha()}">Novo Paciente</a></li>
+            <li><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+            <li><a href="@{Application.getDiagGPrivado()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="mainbox"> 
+
+    <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.index()}">sair</a>&nbsp; &nbsp;</div>
+    <div id="Header1">Realizar consulta do paciente</div>
+    <div id="Descricao">Preencha os campos com os dados da consulta</div>
+
+    <table width="70%" style="text-align:center;">
+        <tr>
+            <td>
+                <br/>
+                #{ifErrors}
+                <div class="error">
+                    <h2>Por favor corrija os seguintes erros:</h2>
+                </div>
+                #{/ifErrors}
+                 #{if flash.error}
+                    <h2 class="error">${flash.error}</h2>
+                #{/if}
+                <br/>
+                <form action="@{Application.addConsulta()}" method="GET">
+                    <fieldset>
+                        <table>
+                            <tr><td style="text-align:right;">Prontuario:</td><td style="text-align:left;"><input type = "text" name="prontuario" #{if prontPaciente != null} value="${prontPaciente}" #{/if}#{else}value="${params.prontuario}"#{/else}><span class="error">#{error 'prontuario' /} </span></td></tr>
+                            <tr><td style="text-align:right;">CRM:</td><td style="text-align:left;"><input type = "text" name="crm" value="${params.crm}"><span class="error">#{error 'crm' /} </span></td></tr>
+                            <tr><td style="text-align:right;">Data da consulta:</td><td width="70%" style="text-align:left;"><input name="dia" type="text" maxlength="2" size="2" value="${params.dia}"><input name="mes" type="text" maxlength="2" size="2" value="${params.mes}"><input name="ano" type="text" maxlength="4" size="4" value="${params.ano}">&nbsp;(dd/mm/aaaa)</td></tr>
+                            <tr><td style="text-align:right;"></td><td style="text-align:left;">
+                                    <ul class="e">#{ifError 'dia'}<li class="e"><span class="error">#{error 'dia' /}</span></li>#{/ifError}
+                                        #{ifError 'mes'}<li class="e"><span class="error">#{error 'mes' /}</span></li>#{/ifError}
+                                        #{ifError 'ano'}<li class="e"><span class="error">#{error 'ano' /}</span></li>#{/ifError}
+                                    </ul>
+                                </td></tr>
+                            <tr><td style="text-align:right;">Observação: </td><td style="text-align:left;"><textarea rows="10" name="obs" >${params.obs}</textarea></td></tr>                                
+                            <tr><td style="text-align:right;"><input type = "submit" value="Buscar"" /></td><td style="text-align:left;"><input type = "button" value="Voltar" onclick="goBack()"/></td></tr>
+                        </table>
+                    </fieldset>
+                </form>	
+            </td>
+
+        </tr>
+    </table>
+
+    <br/>
+    <br/>
+    <br/>
+
+</div>
+
+
+<div id="rodape">
+    <br/>
+    <b>DAMGeR</b>
+    <br/>
+    Sistema de Prontuário
+    <br/>
+</div>
+
+

@@ -1,0 +1,72 @@
+#{extends 'main.html' /}
+#{set title:'Gerar Relatorio' /}
+
+<script type="text/javascript">
+  function goBack()
+  {
+ window.open("@{Application.index()}","_top");
+  }
+</script>
+
+  <div id="header">
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+      </div>
+        
+            <div id="Header3"><br/>
+                <ul id="menu">
+                <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+                    <li><a href="@{Application.index()}">Home</a></li>
+                    <li><a href="@{Application.cadastroNovoMedico()}">Cadastro</a></li>
+                    <li class="selected"><a href="@{Application.getDiagG()}">Relatorios</a></li>
+                    <li><a href="@{Application.contatoAdmin()}">Contato</a></li>
+                </ul>
+            </div>
+    </div>
+
+        <div id="mainbox"> 
+
+            <br/>
+            <div id="Header1">Relatório</div>
+            <div id="Descricao">A funcionalidade de gerar relatórios permite que o usário defina, nos campos abaixo,
+informações desejadas para uma pesquisa específica. Um relatório será gerado a partir das
+informações submetidas, contendo todos os pacientes cadastrados que possuam essas especificações.</div>
+
+            <table width="70%" style="text-align:center;">
+                <tr>
+                    <td>
+                        <br/>
+                        <br/>
+                        <form action="@{Application.buscarRelatorios()}" method="GET">
+                            <fieldset>
+                                <legend>Dados do Relatório:</legend>
+                                <table>
+                                    <tr><td style="text-align:right;">Procedência:</td><td style="text-align:left;"><input type = "text" name="procedencia"></td></tr>
+                                    <tr><td style="text-align:right;">Idade:</td><td style="text-align:left;"><input type = "text" name="idade"></td></tr>
+                                    <tr><td style="text-align:right;">Sexo:</td><td style="text-align:left;"><input type="radio" name="sexo" value="m" /> Masculino<input type="radio" name="sexo" value="f" /> Feminino</td></tr>
+                                    <tr><td style="text-align:right;">Histórico Familiar:</td><td style="text-align:left;"><input type="radio" name="historico" value="true" /> Sim<input type="radio" name="historico" value="false" /> Não</td></tr>
+                                    <tr><td style="text-align:right;">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico" style="width: 250px"><OPTION SELECTED>Todos #{list items:dList, as:'d'} <option>${d.nome}#{/list}</select></td></tr>
+                                    <tr><td style="text-align:right;">Projeto:</td><td style="text-align:left;"><select name="projeto" style="width: 250px"><OPTION SELECTED>Todos #{list items:pList, as:'p'} <option>${p.nome}#{/list}</select></td></tr>
+                                    <tr><td style="text-align:right;"><input type = "submit" value="Gerar"" /></td><td style="text-align:left;"><input type = "button" value="Voltar" onclick="goBack()"/></td></tr>
+                                </table>
+                            </fieldset>
+                        </form>	
+                    </td>
+                </tr>
+            </table>
+
+            <br/>
+            <br/>
+            <br/>
+        </div>
+
+            <div id="rodape">
+                <br/>
+                <b>DAMGeR</b>
+                <br/>
+                TSistema de Prontuário
+                <br/>
+            </div>

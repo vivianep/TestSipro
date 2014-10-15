@@ -1,0 +1,91 @@
+#{extends 'main.html' /}
+#{set title:'Cadastro de Ficha' /}
+<script type="text/javascript">
+  function goBack()
+  {
+window.open("@{Application.telaPrincipal()}","_top");
+  }
+</script>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+        
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            <li class="selected"><a href="@{Application.getDiagCadastro()}">Novo Paciente</a></li>
+            <li><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+            <li><a href="@{Application.getDiagGPrivado()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="mainbox"> 
+
+            
+            <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.index()}">sair</a>&nbsp; &nbsp;</div>
+            <div id="Header1">Cadastro de novo paciente</div>
+            <div id="Descricao">Informe os dados cadastrais do novo paciente e preencha todos os campos obrigatórios - marcados com *</div>
+            <table width="70%" style="text-align:center;">
+                <tr>
+                    <td>
+                        <br/>
+                            #{ifErrors}
+                            <div class="error">
+                            <h2>Por favor corrija os seguintes erros:</h2>
+                            </div>
+                            #{/ifErrors}
+                        <br/>
+                        <form action="@{Application.addpaciente()}"  method="GET">
+                            <fieldset>
+                                <legend>Dados Cadastrais:</legend>
+                                <table>
+                                    <tr><td style="text-align:right;"><label for="nome">Nome:*</label></td><td style="text-align:left;"><input type = "text" name="nome" value="${params.nome}"> <span class="error">#{error 'nome' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"><label for="prontuario">Prontuario:* </label></td><td style="text-align:left;"><input type = "text" name="prontuario" value="${params.prontuario}"> <span class="error">#{error 'prontuario' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"><label for="diagnostico1">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico1" style="width: 250px"><OPTION SELECTED>Nenhum #{list items:dList, as:'d'} <option>${d.nome}#{/list}</select></td></tr>
+                                    <tr><td style="text-align:right;"><label for="diagnostico2">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico2" style="width: 250px"><OPTION SELECTED>Nenhum #{list items:dList, as:'d'} <option>${d.nome}#{/list}</select></td></tr>
+                                    <tr><td style="text-align:right;"><label for="diagnostico3">Diagnostico:</td><td style="text-align:left;"><select name="diagnostico3" style="width: 250px"><OPTION SELECTED>Nenhum #{list items:dList, as:'d'} <option>${d.nome}#{/list}</select></td></tr>
+                                    <tr><td style="text-align:right;"><label for="telefone">Telefone* </label></td><td style="text-align:left;"><input type = "text" name="telefone" value="${params.telefone}"><span class="error">#{error 'telefone' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"><label for="sexo">Sexo:* </label></td><td style="text-align:left;"><input type="radio" name="sexo" value="m" /> Masculino<input type="radio" name="sexo" value="f" /> Feminino <span class="error">#{error 'sexo' /} </span></td></tr>
+                                    <tr><td style="text-align:right;"><label for="procedencia">Procedência: </label></td><td style="text-align:left;"><input type = "text" name="procedencia" value="${params.procedencia}"></td></tr>
+                                    <tr><td style="text-align:right;"><label for="endereco">Endereço: </label></td><td style="text-align:left;"><input type = "text" name="endereco" value="${params.endereco}"></td></tr>
+                                    <tr><td style="text-align:right;"><label for="historico">Histórico Familiar: </label></td><td style="text-align:left;"><input type="radio" name="historico" value="true" /> Sim<input type="radio" name="historico" value="false" /> Não</td></tr>
+                                    <tr><td style="text-align:right;">Nascimento:*</td><td width="70%" style="text-align:left;"><input name="dia" type="text" maxlength="2" size="2" value="${params.dia}"><input name="mes" type="text" maxlength="2" size="2" value="${params.mes}"><input name="ano" type="text" maxlength="4" size="4" value="${params.ano}">&nbsp;(dd/mm/aaaa)</td></tr>
+                                    <tr><td style="text-align:right;"></td><td style="text-align:left;">
+                                            <ul class="e">#{ifError 'dia'}<li class="e"><span class="error">#{error 'dia' /}</span></li>#{/ifError}
+                                                #{ifError 'mes'}<li class="e"><span class="error">#{error 'mes' /}</span></li>#{/ifError}
+                                                #{ifError 'ano'}<li class="e"><span class="error">#{error 'ano' /}</span></li>#{/ifError}
+                                            </ul>
+                                        </td></tr>
+                                    <tr><td style="text-align:right;"><label for="grupo">Grupo de Pesquisa:</td><td style="text-align:left;"><select name="grupo" style="width: 250px"><OPTION SELECTED>Nenhum #{list items:gList, as:'g'} <option >${g.nome}#{/list}</select></td></tr>
+                                    <tr><td><br/></td></tr>
+                                    
+                                       <tr><td style="text-align:right;"><input type = "submit" value="Cadastrar" /></td><td style="text-align:left;"><input type = "button" value="Voltar" onclick="goBack()"/></td></tr>
+                                </table>
+                            </fieldset>
+                        </form>	
+                    </td>
+
+                </tr>
+            </table>
+
+            <br/>
+            <br/>
+            <br/>
+        </div>
+            
+<div id="rodape">
+    <br/>
+    <b>DAMGeR</b>
+    <br/>
+    Sistema de Prontuário
+    <br/>
+</div>
+    

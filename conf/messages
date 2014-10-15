@@ -1,0 +1,19 @@
+# Validation messages
+validation.required=%s é obrigatório
+validation.minSize=%s length must be longer than %d 
+validation.range=%s deve estar entre %d e %d
+validation.equals=%s deve ser igual a %s
+validation.email=%s não é um email correto
+validation.isTrue=%s deve estar checado
+
+# Field names
+nome=nome
+especializacao=especializacao
+senha1=a senha
+senha2=confirmação de senha
+crm=CRM
+telefone=numero de telefone
+justificativa=justificativa
+senhaantiga=senha antiga
+senhanova1=senha nova
+senhanova2=confirmação de senha

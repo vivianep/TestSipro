@@ -1,0 +1,60 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li><a href="@{Application.telaPrincipal()}">Conta</a></li>
+            <li><a href="@{Application.getDiagCadastro()}">Novo Paciente</a></li>
+            <li><a href="@{Application.consultarFicha()}">Consultar Ficha</a></li>
+            <li><a href="@{Application.getDiagGPrivado()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdminPrivado()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+
+<div id="mainbox"> 
+
+
+    <div style="text-align:right"><a href="@{Application.alterarSenha()}">alterar senha</a>&nbsp; &nbsp;<a href="@{Application.index()}">sair</a>&nbsp; &nbsp;</div>
+    <div id="Header1" style="border-radius: 10px 10px 10px 10px;"> Para alterar sua senha, informe o e-mail e a senha atual e digite a nova senha.</div>
+    <div style="margin-top: 25%; width:70%; text-align:center; margin-left: auto; margin-right: auto;">
+        #{ifErrors}
+        <div class="error">
+            <h2>Por favor corrija os seguintes erros:</h2>
+        </div>
+        #{/ifErrors}
+        #{if flash.error}
+        <h2 class="error">${flash.error}</h2>
+        #{/if}
+        <form action="@{Application.mudarSenha()}" method="GET">
+            <fieldset>
+                <legend>Alterar senha:</legend>
+                <table>
+                    <tr><td style="text-align:right;"> E-mail:</td><td style="text-align:left;"><input type = "text" name="email" value="${med?.getEmail() ?: params.email}" /><span class="error">#{error 'email' /}</span></td></tr>
+                    <tr><td style="text-align:right;"> Senha antiga:</td><td style="text-align:left;"><input type = "password" name="senhaantiga" value="${params.senhaantiga}"/><span class="error">#{error 'senhaantiga' /}</span></td></tr>
+                    <tr><td style="text-align:right;"> Senha nova:</td><td style="text-align:left;"><input type = "password" name="senhanova1" value="${params.senhanova1}"/><span class="error">#{error 'senhanova1' /}</span></td></tr>
+                    <tr><td style="text-align:right;"> Confirmar senha:</td><td style="text-align:left;"><input type = "password" name="senhanova2" value="${params.senhanova2}"/><span class="error">#{error 'senhanova2' /}</span></td></tr>
+                    <tr><td style="text-align:right;"><input type = "submit" value="OK" /></td><td  style="text-align:left;"></td></tr>
+                </table>
+            </fieldset>
+        </form>	
+    </div>
+</div>
+
+<div id="rodape">
+    <br/>
+    <b>DAMGeR</b>
+    <br/>
+    Sistema de Prontuário
+    <br/>
+</div>

@@ -1,0 +1,68 @@
+#{extends 'main.html' /}
+#{set title:'Relatorio Lista' /}       
+
+<script type="text/javascript">
+    function goBack()
+    {
+        window.open("@{Application.gerarRelatorio()}","_top");
+    }
+</script>
+
+<div id="header">
+    <div id="logo">
+        <div id="logo_text">
+            <!-- class="logo_colour", allows you to change the colour of the text -->
+            <h1><a href="@{Application.index()}">Si<span class="logo_colour">pro</span></a></h1>
+        </div>
+    </div>
+
+    <div id="Header3"><br/>
+        <ul id="menu">
+            <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+            <li><a href="@{Application.index()}">Home</a></li>
+            <li><a href="@{Application.cadastroNovoMedico()}">Cadastro</a></li>
+            <li class="selected"><a href="@{Application.getDiagG()}">Relatorios</a></li>
+            <li><a href="@{Application.contatoAdmin()}">Contato</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="mainbox"> 
+
+    <br/>
+    <div id="Header1" style="border-radius: 10px 10px 10px 10px;">Relatório Lista</div>
+
+    <table style="text-align:center; width:70%;">
+        <tr>
+            <td style="text-align:left">
+                <br/>
+                <br/>
+                #{if (!pList.isEmpty())}
+                <table id ="Relatorio" >
+                    <tr> <th>diagnostico</th><th>diagnostico</th><th>diagnostico</th><th>sexo</th><th>procedencia</th><th>historico familiar</th> <th>data de nascimento</th> </tr>
+                    #{list items:pList, as:'p'}
+                    <tr #{if p_parity=="odd"} class="alt" #{/if}><td>${p.diagnostico1}</td> <td>${p.diagnostico2}</td> <td>${p.diagnostico3}</td> <td>#{if p.sexo == "f"}feminino#{/if}#{else}masculino#{/else}</td> <td>${p.procedencia}</td> <td>#{if p.historico}sim#{/if}#{else}nao#{/else}</td> <td>${p.datanasc.toString()}</td></tr>
+    		#{/list}
+                </table>
+                #{/if}
+                #{else} 
+                <div class="error">
+                    <h2>Nenhum dado encontrado!</h2>
+                </div>
+                #{/else}
+                <input type = "button" value="Voltar" onclick="goBack()"/>
+                <br/>
+                <br/>
+                <br/>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="rodape">
+    <br/>
+    <b>DAMGeR</b>
+    <br/>
+    Sistema de Prontuário
+    <br/>
+</div>
