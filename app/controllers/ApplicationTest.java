@@ -195,6 +195,56 @@ public class ApplicationTest {
 		assertEquals (true,myApplication.errorFile.errorMessages.contains("Dados inseridos inválidos"));// testa mudar senha  com campo email invalido
 	}
 	
+	@Test//teste inválido para campos vazios requeridos quando uma solicitacao eh aceita
+	public void testaAddSolicitacaoCamposVazios() throws Exception{
+		Application myApplication = new Application();
+		long telefone=96999224;
+		long crm = 3456;
+		myApplication.teste = true;
+		myApplication.addsolicitacao("", "123","123","Dermatologia",crm,"Medicina","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "","123","Dermatologia",crm,"Medicina","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","","Dermatologia",crm,"Medicina","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","123","",crm,"Medicina","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","123","Dermatologista",null,"Medicina","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","123","Dermatologista",crm,"","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","123","Dermatologista",crm,"Medicina","",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","123","Dermatologista",crm,"Medicina","vivi@sipro.com",null,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		myApplication.addsolicitacao("Viviane", "123","123","Dermatologista",crm,"Medicina","vivi@sipro.com",telefone,"");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+		
+	}
+	
+	@Test 
+	public void testaAddSolicitacaoSenhasNCoincidem() throws Exception{
+		Application myApplication = new Application();
+		long telefone=96999224;
+		long crm = 3456;
+		myApplication.teste = true;
+		myApplication.addsolicitacao("Viviane", "1234","123","Dermatologia",crm,"Medicina","vivi@sipro.com",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Campos inválidos ou vazios"));
+	
+	}
+	@Test
+	public void testaAddSolicitacaoEmailInvalido() throws Exception{
+		Application myApplication = new Application();
+		long telefone=96999224;
+		long crm = 3456;
+		myApplication.teste = true;
+		myApplication.addsolicitacao("Viviane", "1234","1234","Dermatologia",crm,"Medicina","vivi@sipro",telefone,"Contratado pelo Hospital");//teste inválido para campos de senha vazia no login
+		assertEquals(true, myApplication.errorFile.errorMessages.contains("Email inválido"));
+	
+	}
+
+	
+	
 	
 	
 }

@@ -1,9 +1,7 @@
 package controllers;
 
 import play.*;
-import play.data.validation.Validation;
-//import play.data.validation.Error;
-import play.data.validation.Required;
+
 import play.mvc.*;
 
 import java.math.BigInteger;
@@ -88,20 +86,20 @@ public class Application extends Controller {
 			Integer mes, 
 			Integer ano, String grupo) throws SQLException{
 
-
-		validation.required("nome", nome);
-		validation.required("prontuario",prontuario);  
-		validation.required("telefone",telefone);
-		validation.required("sexo",sexo);
-		validation.required("dia",dia);
-		validation.range("dia",dia,1,31);
-		validation.range("mes",mes,1,12);
-		validation.range("ano",ano,1900,2050);
-		validation.required("mes",mes);
-		validation.required("ano",ano);
+		validating = new ValidationTest();
+		validating.required("nome", nome);
+		validating.required("prontuario",prontuario);  
+		validating.required("telefone",telefone);
+		validating.required("sexo",sexo);
+		validating.required("dia",dia);
+		validating.range(dia,1,31);
+		validating.range(mes,1,12);
+		validating.range(ano,1900,2050);
+		validating.required("mes",mes);
+		validating.required("ano",ano);
 
 		// Handle errors
-		if(validation.hasErrors()) {
+		if(validating.hasErrors()) {
 			List<Diagnostico> dList = diagnosticosLista;
 			List<GrupoPesquisa> gList = gruposLista;
 			render("@cadastroFicha",dList,gList);
@@ -151,38 +149,51 @@ public class Application extends Controller {
 			String email,
 			Long telefone, 
 			String justificativa) throws Exception{
-
-		validation.required("crm",crm);
-		validation.required(nome);
-		validation.required(especializacao);
-		validation.required(departamento);
-		validation.email(email);
-		validation.required(email);
-		validation.required(senha1);
-		validation.required(senha2);
-		validation.equals(senha1, senha2);
-		validation.required(telefone);
-		validation.required(justificativa);
-
-		// Handle errors
-		if(validation.hasErrors()) {
-			render("@cadastroNovoMedico");
+		
+		errorFile= new ErrorFile();
+		validating= new ValidationTest();
+		validating.required("crm",crm);
+		validating.required(nome);
+		validating.required(especializacao);
+		validating.required(departamento);
+		validating.email(email);
+		validating.required(email);
+		validating.required(senha1);
+		validating.required(senha2);
+		validating.equals(senha1, senha2);
+		validating.required(telefone);
+		validating.required(justificativa);
+		boolean email_invalido= validating.email(email);
+		
+		if(validating.hasErrors()||!email_invalido) {
+			if(!teste)
+				render("@cadastroNovoMedico");
+			else{
+				if(!email_invalido)
+					errorFile.errorMessages.add("Email inválido");
+				errorFile.errorMessages.add("Campos inválidos ou vazios");
+				return;
+				
+				
+			}
 		}
+		
+		if(!teste){
+			conectar();
+			String sql = "INSERT INTO solicitacao VALUES(" + crm + ",'" + nome + "','" + especializacao +
+					"','" + departamento + "','" + email + "','" + senha1 +
+					"'," + telefone + ",'" + justificativa + "')";
+			try {
+				if (senha1.equals(senha2))
+					comando.executeUpdate(sql);
 
-		conectar();
-		String sql = "INSERT INTO solicitacao VALUES(" + crm + ",'" + nome + "','" + especializacao +
-				"','" + departamento + "','" + email + "','" + senha1 +
-				"'," + telefone + ",'" + justificativa + "')";
-		try {
-			if (senha1.equals(senha2))
-				comando.executeUpdate(sql);
+			} catch (Exception dataI){
 
-		} catch (Exception dataI){
-
+			}
+			con.close();    		
+			flash.success("Solicitação feita com sucesso");
+			index();
 		}
-		con.close();    		
-		flash.success("Solicitação feita com sucesso");
-		index();
 	}
 
 	public static void permitirLogin(String email, String senha) throws SQLException{
@@ -313,8 +324,8 @@ public class Application extends Controller {
 		validating.email(email);
 		validating.required(senhaantiga);
 		validating.required(senhanova1);
-		boolean senhasIguais =validating.equals(senhanova1,senhanova2);
 		validating.required(senhanova2);
+		validating.equals(senhanova1, senhanova2);
 
 		
 		// Handle errors
@@ -378,9 +389,9 @@ public class Application extends Controller {
 		validating= new ValidationTest();	
 
 		boolean nomeNulo, prontNulo, dataNula;
-		nomeNulo=validating.required(nome);
-		prontNulo=validating.required(prontuario);
-		dataNula=validating.required(dia)&&validating.required(mes)&&validating.required(ano);
+		nomeNulo=!validating.required(nome);
+		prontNulo=!validating.required(prontuario);
+		dataNula=!(validating.required(dia)&&validating.required(mes)&&validating.required(ano));
 
 
 		String consulta = "select DISTINCT p.prontuario, nome, diagnostico1, diagnostico2, diagnostico3, telefone, sexo, procedencia, endereco, historico, datanasc from consulta as c, paciente as p where c.prontuario = p.prontuario ";
@@ -388,7 +399,7 @@ public class Application extends Controller {
 		else consulta = "select DISTINCT p.prontuario, nome, diagnostico1, diagnostico2, diagnostico3, telefone, sexo, procedencia, endereco, historico, datanasc from  paciente as p where prontuario != -1";
 		if (!nomeNulo) consulta = consulta + "AND nome = '" + nome + "'";
 		if (!prontNulo) consulta = consulta + " AND p.prontuario = " + prontuario; 
-
+		System.out.println(consulta);
 		ResultSet rs = comando.executeQuery(consulta + "order by nome");
 
 		while (rs.next()){
@@ -418,17 +429,17 @@ public class Application extends Controller {
 			Integer mes, 
 			Integer ano, 
 			String obs) throws SQLException{
-		validation.required("prontuario",prontuario);
-		validation.required("crm",crm);
-		validation.required("dia",dia);
-		validation.range(dia,1,31);
-		validation.range(mes,1,12);
-		validation.range(ano,1900,2050);
-		validation.required("mes",mes);
-		validation.required("ano",ano);
+		validating.required("prontuario",prontuario);
+		validating.required("crm",crm);
+		validating.required("dia",dia);
+		validating.range(dia,1,31);
+		validating.range(mes,1,12);
+		validating.range(ano,1900,2050);
+		validating.required("mes",mes);
+		validating.required("ano",ano);
 
 		// Handle errors
-		if(validation.hasErrors()) {
+		if(validating.hasErrors()) {
 			render("@adicionarConsulta");
 		}
 
@@ -753,13 +764,12 @@ public class Application extends Controller {
 		}
 
 		public static void recuperarSenha(String email) throws SQLException, EmailException{
-			validation.required(email);
-			validation.email(email);	    	
+			validating.required(email);
+			validating.email(email);	    	
 			// Handle errors
-			if(validation.hasErrors()) {
+			if(validating.hasErrors()) {
 				render("@esqueciSenha");
 			}
-
 			conectar();
 			ResultSet rs;
 			String senha = "";
@@ -822,16 +832,16 @@ public class Application extends Controller {
 		public static void fazerContato(String email, String conteudo,boolean privado)
 				throws EmailException {
 
-			validation.required(email);
-			validation.email(email);
-			validation.required(conteudo);
+			validating.required(email);
+			validating.email(email);
+			validating.required(conteudo);
 			// Handle errors
 			if (!privado) {
-				if (validation.hasErrors()) {
+				if (validating.hasErrors()) {
 					render("@contatoAdmin");
 				}
 			} else {
-				if (validation.hasErrors()) {
+				if (validating.hasErrors()) {
 					render("@contatoAdminPrivado");
 				}
 			}
