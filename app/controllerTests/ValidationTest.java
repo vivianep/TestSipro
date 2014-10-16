@@ -1,4 +1,4 @@
-package ControllerTests;
+package controllerTests;
 import play.data.validation.Validation;
 
 

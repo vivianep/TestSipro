@@ -1,4 +1,4 @@
-package ControllerTests;
+package controllerTests;
 
 import java.util.ArrayList;
 import java.util.List;
