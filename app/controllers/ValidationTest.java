@@ -46,9 +46,11 @@ public class ValidationTest {
 		return false;
 	}
 
-	public boolean range ( int param,int min, int max){
-		if(param>=min&&param<=max){
-			return true;
+	public boolean range ( Object param,int min, int max){
+		if(param!=null){
+			if((Integer)param>=min&&(Integer)param<=max){
+				return true;
+			}
 		}
 		hasErrors=true;
 		return false;
@@ -59,44 +61,35 @@ public class ValidationTest {
 			return this.required(object);
 		}
 		else if(tipo =="nome"){
-			String nome = (String) object;
-			if (object == null || object.equals(""))
-				return false;
-			return true;
+			return this.required(object);
 		}
 		else if(tipo == "prontuario"){
-			String prontuario=(String)object;
-			for (int i = 0; i < prontuario.length(); i++) {
-				if(prontuario.codePointAt(i)<48||prontuario.codePointAt(i)>=58)
-					return false;
-			}
-			return true;
+			return this.required(object);
 		}
 		else if(tipo =="sexo"){
 			String nome = (String) object;
-			if (object == null || object.equals(""))
-				return false;
-			return true;
+			if (nome =="m" || nome=="f")
+				return true;
+			hasErrors= true;
+			return false;
 		}
 		else if(tipo =="telefone"){
-			String tel=(String)object;
-			for (int i = 0; i < tel.length(); i++) {
-				if(tel.codePointAt(i)<48||tel.codePointAt(i)>=58)
-					return false;
-			}
-			return true;
+			return this.required(object);
 		}
 		else if(tipo =="dia"){
-			int d = (Integer) object;
-			return range(d,1,31);
+			if(this.required(object))
+				return range((Integer) object,1,31);
+			return false;
 		}
 		else if(tipo =="mes"){
-			int m = (Integer) object;
-			return range(m,1,12);
+			if(this.required(object))
+				return range((Integer) object,1,12);
+			return false;
 		}
 		else if(tipo =="ano"){
-			int a = (Integer) object;
-			return range(a,1900,2100);     
+			if(this.required(object))
+				return range((Integer) object,1900,2100);
+			return false;     
 		}
 		return true;
 	}

@@ -1,7 +1,6 @@
 package controllers;
 
 import play.*;
-
 import play.mvc.*;
 
 import java.math.BigInteger;
@@ -22,6 +21,7 @@ import java.util.Date;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+
 import models.*;
 
 public class Application extends Controller {
@@ -85,24 +85,30 @@ public class Application extends Controller {
 			Integer dia, 
 			Integer mes, 
 			Integer ano, String grupo) throws SQLException{
-
+		errorFile= new ErrorFile();
 		validating = new ValidationTest();
 		validating.required("nome", nome);
 		validating.required("prontuario",prontuario);  
 		validating.required("telefone",telefone);
 		validating.required("sexo",sexo);
 		validating.required("dia",dia);
-		validating.range(dia,1,31);
-		validating.range(mes,1,12);
-		validating.range(ano,1900,2050);
 		validating.required("mes",mes);
 		validating.required("ano",ano);
 
 		// Handle errors
+
+		if (!validating.range(dia,1,31)||!validating.range(mes,1,12)
+				||!validating.range(ano,1900,2100)){
+
+			errorFile.errorMessages.add("Data inválida");
+		}
 		if(validating.hasErrors()) {
-			List<Diagnostico> dList = diagnosticosLista;
-			List<GrupoPesquisa> gList = gruposLista;
-			render("@cadastroFicha",dList,gList);
+			if(!teste){
+				List<Diagnostico> dList = diagnosticosLista;
+				List<GrupoPesquisa> gList = gruposLista;
+				render("@cadastroFicha",dList,gList);
+			}
+			errorFile.errorMessages.add("Campos inválidos ou vazios");
 		}
 
 
@@ -122,21 +128,22 @@ public class Application extends Controller {
 				diagnostico2 + "','" + diagnostico3 + "')";
 		String sql2 = "INSERT INTO membro VALUES (" + prontuario + "," + id + ")"; 
 
+		if(!teste){
+			if (validating.hasErrors())
+				cadastroFicha(); 
 
-		if (prontuario == null || nome.equals(null) || telefone == null || sexo.equals(null) || dia == null || mes == null || ano == null)
-			cadastroFicha(); 
-
-		else {
-			try {
-				comando.executeUpdate(sql);
-				if (id != -1) comando.executeUpdate(sql2);
-			} catch (SQLException e) {
+			else {
+				try {
+					comando.executeUpdate(sql);
+					if (id != -1) comando.executeUpdate(sql2);
+				} catch (SQLException e) {
+				}
 			}
-		}
 
-		con.close();
-		flash.success("Cadastro feito com sucesso");
-		telaPrincipal();
+			con.close();
+			flash.success("Cadastro feito com sucesso");
+			telaPrincipal();
+		}
 	}
 
 
@@ -149,7 +156,7 @@ public class Application extends Controller {
 			String email,
 			Long telefone, 
 			String justificativa) throws Exception{
-		
+
 		errorFile= new ErrorFile();
 		validating= new ValidationTest();
 		validating.required("crm",crm);
@@ -164,7 +171,7 @@ public class Application extends Controller {
 		validating.required(telefone);
 		validating.required(justificativa);
 		boolean email_invalido= validating.email(email);
-		
+
 		if(validating.hasErrors()||!email_invalido) {
 			if(!teste)
 				render("@cadastroNovoMedico");
@@ -173,16 +180,17 @@ public class Application extends Controller {
 					errorFile.errorMessages.add("Email inválido");
 				errorFile.errorMessages.add("Campos inválidos ou vazios");
 				return;
-				
-				
+
+
 			}
 		}
-		
+
+
+		conectar();
+		String sql = "INSERT INTO solicitacao VALUES(" + crm + ",'" + nome + "','" + especializacao +
+				"','" + departamento + "','" + email + "','" + senha1 +
+				"'," + telefone + ",'" + justificativa + "')";
 		if(!teste){
-			conectar();
-			String sql = "INSERT INTO solicitacao VALUES(" + crm + ",'" + nome + "','" + especializacao +
-					"','" + departamento + "','" + email + "','" + senha1 +
-					"'," + telefone + ",'" + justificativa + "')";
 			try {
 				if (senha1.equals(senha2))
 					comando.executeUpdate(sql);
@@ -203,8 +211,8 @@ public class Application extends Controller {
 		validating= new ValidationTest();
 		validating.required(email);
 		validating.required(senha);
-		if(validating.email(email))
-			errorFile.errorMessages.add("Invalid e-mail");
+		if(!validating.email(email))
+			errorFile.errorMessages.add("Email inválido");
 		// Handle errors
 
 		if(validating.hasErrors()) {
@@ -253,10 +261,11 @@ public class Application extends Controller {
 		conectar();
 		ResultSet rs;
 		Medico m = new Medico();
+		errorFile = new ErrorFile();
 
 		rs = comando.executeQuery("SELECT * FROM solicitacao WHERE crm = " + crm);
 
-		while (rs.next()){
+		if (rs.next()){
 			m.setCrm(rs.getLong("crm"));
 			m.setDepartamento(rs.getString("departamento"));
 			m.setEmail(rs.getString("email"));
@@ -266,17 +275,18 @@ public class Application extends Controller {
 			m.setSenha(rs.getString("senha"));
 			m.setTelefone(rs.getLong("telefone"));
 			m.setAdmin(false);
-		}
+		}else
+			errorFile.errorMessages.add("Campos inválidos ou vazios");
 		String sqlAdd = "INSERT INTO medico VALUES (" + m.getCrm() + ",'" + m.getNome() + "','" + m.getEspecializacao() +
 				"','" + m.getDepartamento() + "', '" + m.getEmail() + "', '" + m.getSenha() +
 				"', " + m.getTelefone() + ", '" + m.getJustificativa() + "')";
 
 		String sqlRemover = "DELETE FROM solicitacao WHERE crm = " + crm;
-
-		comando.executeUpdate(sqlAdd);
-		comando.executeUpdate(sqlRemover);
-		if(!teste)
+		if(!teste){
+			comando.executeUpdate(sqlAdd);
+			comando.executeUpdate(sqlRemover);
 			verSolicitacao();
+		}
 	}
 
 	public static void recusarMedico(Long crm) throws SQLException{
@@ -327,37 +337,38 @@ public class Application extends Controller {
 		validating.required(senhanova2);
 		validating.equals(senhanova1, senhanova2);
 
-		
+
 		// Handle errors
 		if(validating.hasErrors()) {
 			if(!teste)
 				render("@alterarSenha");
 			else{
-				
+
 				errorFile.errorMessages.add("Campos inválidos ou vazios");
 				return;
-				
-				
+
+
 			}
 		}
-		
+
 		ResultSet rs;
 		String sql = null;
 		conectar();
 
 		rs = comando.executeQuery("SELECT * FROM medico WHERE email = '" + email +"' AND senha = '" + senhaantiga + "'");
 		if (rs.next()) {
-			sql = "UPDATE medico SET senha = '" + senhanova1 + "' WHERE email = '" + email + "' AND senha = '" + senhaantiga + "'";
-			comando.executeUpdate(sql);
 			if(!teste){
-			flash.success("Senha alterada com sucesso!");
-			telaPrincipal();
+				sql = "UPDATE medico SET senha = '" + senhanova1 + "' WHERE email = '" + email + "' AND senha = '" + senhaantiga + "'";
+				comando.executeUpdate(sql);
+
+				flash.success("Senha alterada com sucesso!");
+				telaPrincipal();
 			}
 		}
 		else{
 			if(!teste){
-			flash.error("Os dados inseridos são inválidos!");
-			alterarSenha(); 
+				flash.error("Os dados inseridos são inválidos!");
+				alterarSenha(); 
 			}
 			else
 				errorFile.errorMessages.add("Dados inseridos inválidos");
@@ -387,20 +398,32 @@ public class Application extends Controller {
 		List<Paciente> pacientes = new ArrayList<Paciente>();
 		errorFile= new ErrorFile();
 		validating= new ValidationTest();	
-
+		ResultSet rs;
 		boolean nomeNulo, prontNulo, dataNula;
-		nomeNulo=!validating.required(nome);
-		prontNulo=!validating.required(prontuario);
-		dataNula=!(validating.required(dia)&&validating.required(mes)&&validating.required(ano));
+		nomeNulo=(nome==null||nome=="");
+		prontNulo=prontuario==null;
 
+		//validating.required(nome);
+		validating.required(dia);
+		validating.required(mes);
+		validating.required(ano);
+		if(validating.hasErrors()){
+			errorFile.errorMessages.add("Campos inválidos ou vazios");
+			dataNula=true;
+		}
+		else
+			dataNula=!((dia>=1&&dia<=31)&&(mes>=1&&mes<=12)&&(ano>=1900&&ano<=2100));
 
 		String consulta = "select DISTINCT p.prontuario, nome, diagnostico1, diagnostico2, diagnostico3, telefone, sexo, procedencia, endereco, historico, datanasc from consulta as c, paciente as p where c.prontuario = p.prontuario ";
 		if (!dataNula)  consulta = consulta + " AND data = '" + ano + "-" + mes + "-" + dia +"'";
 		else consulta = "select DISTINCT p.prontuario, nome, diagnostico1, diagnostico2, diagnostico3, telefone, sexo, procedencia, endereco, historico, datanasc from  paciente as p where prontuario != -1";
 		if (!nomeNulo) consulta = consulta + "AND nome = '" + nome + "'";
 		if (!prontNulo) consulta = consulta + " AND p.prontuario = " + prontuario; 
-		System.out.println(consulta);
-		ResultSet rs = comando.executeQuery(consulta + "order by nome");
+
+
+
+		rs = comando.executeQuery(consulta + "order by nome");
+
 
 		while (rs.next()){
 			Paciente p = new Paciente();
@@ -420,7 +443,9 @@ public class Application extends Controller {
 
 
 		pacientesLista = pacientes;
-		resultadoFicha();    	
+		if(!teste)
+			resultadoFicha();
+
 	}
 
 	public static void addConsulta(Long prontuario, 
@@ -429,48 +454,60 @@ public class Application extends Controller {
 			Integer mes, 
 			Integer ano, 
 			String obs) throws SQLException{
+		errorFile= new ErrorFile();
+		validating= new ValidationTest();	
 		validating.required("prontuario",prontuario);
 		validating.required("crm",crm);
 		validating.required("dia",dia);
 		validating.range(dia,1,31);
 		validating.range(mes,1,12);
-		validating.range(ano,1900,2050);
+		validating.range(ano,1900,2100);
 		validating.required("mes",mes);
 		validating.required("ano",ano);
+		if (!validating.range(dia,1,31)||!validating.range(mes,1,12)
+				||!validating.range(ano,1900,2100)){
+
+			errorFile.errorMessages.add("Data inválida");
+		}
+
+
 
 		// Handle errors
 		if(validating.hasErrors()) {
-			render("@adicionarConsulta");
+			if(!teste)
+				render("@adicionarConsulta");
+			errorFile.errorMessages.add("Campos inválidos ou vazios");
 		}
 
 		conectar();
 		ResultSet rs;
+		if(!teste){
+			rs = comando.executeQuery("SELECT * FROM paciente WHERE prontuario = " + prontuario);
+			if (!rs.next()){
+				// Paciente nao existente
+				flash.error("Paciente nao existente!");
+				render("@adicionarConsulta");
+			}
+			rs = comando.executeQuery("SELECT * FROM medico where crm = " + crm);
+			if (!rs.next()){
+				// Medico nao existente
+				flash.error("Médico nao existente!");
+				render("@adicionarConsulta");
+			}
+			rs = comando.executeQuery("SELECT * FROM consulta WHERE prontuario = " + prontuario + " AND data = '" + dia + "/" + mes + "/" + ano + "'");
 
-		rs = comando.executeQuery("SELECT * FROM paciente WHERE prontuario = " + prontuario);
-		if (!rs.next()){
-			// Paciente nao existente
-			flash.error("Paciente nao existente!");
-			render("@adicionarConsulta");
+			if (rs.next()){
+				flash.error("Ja foi cadastrada uma consulta para este paciente, nessa data!");
+				render("@adicionarConsulta");
+			}
+
+			if (obs == "null") obs = " ";
+
+			String sql = "INSERT INTO consulta VALUES ('" + dia + "/" + mes + "/" + ano + "','" + obs + "'," + prontuario + "," + crm + ")";
+			comando.executeUpdate(sql);
+			con.close();
+			telaPrincipal();
 		}
-		rs = comando.executeQuery("SELECT * FROM medico where crm = " + crm);
-		if (!rs.next()){
-			// Medico nao existente
-			flash.error("Médico nao existente!");
-			render("@adicionarConsulta");
-		}
-		rs = comando.executeQuery("SELECT * FROM consulta WHERE prontuario = " + prontuario + " AND data = '" + dia + "/" + mes + "/" + ano + "'");
-
-		if (rs.next()){
-			flash.error("Ja foi cadastrada uma consulta para este paciente, nessa data!");
-			render("@adicionarConsulta");
-		}
-
-		if (obs == "null") obs = " ";
-
-		String sql = "INSERT INTO consulta VALUES ('" + dia + "/" + mes + "/" + ano + "','" + obs + "'," + prontuario + "," + crm + ")";
-		comando.executeUpdate(sql);
-		con.close();
-		telaPrincipal();
 	}
 
 	public static Date getData(int idade){
@@ -659,134 +696,147 @@ public class Application extends Controller {
 
 	}
 
-		public static void buscarRelatorios(String diagnostico, String procedencia, Integer idade, String sexo, Boolean historico, String projeto) throws SQLException{
+	public static void buscarRelatorios(String diagnostico, String procedencia, Integer idade, String sexo, Boolean historico, String projeto) throws SQLException{
 
-			buscaSQL(diagnostico, procedencia, idade, sexo, historico, projeto, 0);
+		buscaSQL(diagnostico, procedencia, idade, sexo, historico, projeto, 0);
 
+	}
+
+	public static void buscarRelatoriosPrivado(String diagnostico, String procedencia, Integer idade, String sexo, Boolean historico, String projeto) throws SQLException{
+
+		buscaSQL(diagnostico, procedencia, idade, sexo, historico, projeto, 1);
+
+	}
+
+
+	public static void getDiagG() throws SQLException{
+
+		getDiagGrupo(0);
+
+	}
+
+	public static void getDiagGPrivado() throws SQLException{
+
+		getDiagGrupo(1);
+
+	}
+
+	public static void getDiagCadastro() throws SQLException{
+
+		getDiagGrupo(2);
+
+	}
+
+	public static void index() {
+		render();
+	}
+
+	public static  void cadastroNovoMedico() {
+		render();
+	}
+
+	public static  void gerarRelatorio() throws SQLException {
+
+		List<GrupoPesquisa> pList = gruposLista;
+		List<Diagnostico> dList = diagnosticosLista;
+		render(pList,dList);
+	}
+
+	public static  void relatorioLista() {
+		List<Paciente> pList = pacientesLista;
+		render(pList);
+	}
+
+	public static  void relatorioListaPrivado() {
+		List<Paciente> pList = pacientesLista;
+		List<Integer> mList = masculinoLista;
+		List<Integer> fList = femininoLista;
+		render(pList,mList,fList);
+	}
+
+	public static  void telaPrincipal() {
+		Medico med = medicoLogado;
+		render(med);
+
+	}
+
+	public static  void cadastroFicha() {
+		List<Diagnostico> dList = diagnosticosLista;
+		List<GrupoPesquisa> gList = gruposLista;
+		render(dList,gList);
+	}
+
+	public static  void consultarFicha() {
+		render();
+	}
+
+
+	public static  void resultadoFicha() {
+		List<Paciente> pList = pacientesLista;
+		render(pList);
+	}
+
+
+
+	public static  void atualizarFicha(int p) throws SQLException{
+		Paciente pacienteEscolhido = pacientesLista.get(p-1);
+
+		conectar();
+		List<Consulta> consultas = new ArrayList<Consulta>();
+		List<Diagnostico> diagnosticos = new ArrayList<Diagnostico>();
+
+		ResultSet rs = comando.executeQuery("SELECT * FROM consulta where prontuario = " + pacienteEscolhido.getProntuario());
+		while (rs.next()){
+			Consulta c = new Consulta();
+			c.setCrm(rs.getLong("crm"));
+			c.setData(rs.getDate("data"));
+			c.setObservacao(rs.getString("observacao"));
+			c.setProntuario(rs.getLong("prontuario"));
+			consultas.add(c);			
 		}
 
-		public static void buscarRelatoriosPrivado(String diagnostico, String procedencia, Integer idade, String sexo, Boolean historico, String projeto) throws SQLException{
 
-			buscaSQL(diagnostico, procedencia, idade, sexo, historico, projeto, 1);
+		//List<Consulta> cList = consultasLista;
+		diagnosticos = diagnosticosLista;
+		render(pacienteEscolhido,consultas, diagnosticos);
+	}
 
-		}
+	public static void recuperarSenha(String email) throws SQLException, EmailException{
 
-
-		public static void getDiagG() throws SQLException{
-
-			getDiagGrupo(0);
-
-		}
-
-		public static void getDiagGPrivado() throws SQLException{
-
-			getDiagGrupo(1);
-
-		}
-
-		public static void getDiagCadastro() throws SQLException{
-
-			getDiagGrupo(2);
-
-		}
-
-		public static void index() {
-			render();
-		}
-
-		public static  void cadastroNovoMedico() {
-			render();
-		}
-
-		public static  void gerarRelatorio() throws SQLException {
-
-			List<GrupoPesquisa> pList = gruposLista;
-			List<Diagnostico> dList = diagnosticosLista;
-			render(pList,dList);
-		}
-
-		public static  void relatorioLista() {
-			List<Paciente> pList = pacientesLista;
-			render(pList);
-		}
-
-		public static  void relatorioListaPrivado() {
-			List<Paciente> pList = pacientesLista;
-			List<Integer> mList = masculinoLista;
-			List<Integer> fList = femininoLista;
-			render(pList,mList,fList);
-		}
-
-		public static  void telaPrincipal() {
-			Medico med = medicoLogado;
-			render(med);
-		}
-
-		public static  void cadastroFicha() {
-			List<Diagnostico> dList = diagnosticosLista;
-			List<GrupoPesquisa> gList = gruposLista;
-			render(dList,gList);
-		}
-
-		public static  void consultarFicha() {
-			render();
-		}
-
-
-		public static  void resultadoFicha() {
-			List<Paciente> pList = pacientesLista;
-			render(pList);
-		}
-
-
-
-		public static  void atualizarFicha(int p) throws SQLException{
-			Paciente pacienteEscolhido = pacientesLista.get(p-1);
-
-			conectar();
-			List<Consulta> consultas = new ArrayList<Consulta>();
-			List<Diagnostico> diagnosticos = new ArrayList<Diagnostico>();
-
-			ResultSet rs = comando.executeQuery("SELECT * FROM consulta where prontuario = " + pacienteEscolhido.getProntuario());
-			while (rs.next()){
-				Consulta c = new Consulta();
-				c.setCrm(rs.getLong("crm"));
-				c.setData(rs.getDate("data"));
-				c.setObservacao(rs.getString("observacao"));
-				c.setProntuario(rs.getLong("prontuario"));
-				consultas.add(c);			
-			}
-
-
-			//List<Consulta> cList = consultasLista;
-			diagnosticos = diagnosticosLista;
-			render(pacienteEscolhido,consultas, diagnosticos);
-		}
-
-		public static void recuperarSenha(String email) throws SQLException, EmailException{
-			validating.required(email);
-			validating.email(email);	    	
-			// Handle errors
-			if(validating.hasErrors()) {
+		errorFile= new ErrorFile();
+		validating = new ValidationTest();
+		validating.required(email);
+		validating.email(email);	    	
+		// Handle errors
+		if(!validating.email(email))
+			errorFile.errorMessages.add("Email inválido");
+		if(validating.hasErrors()) {
+			if(!teste)
 				render("@esqueciSenha");
-			}
-			conectar();
-			ResultSet rs;
-			String senha = "";
-			String nome = "";
+			errorFile.errorMessages.add("Campos inválidos ou vazios");
 
-			rs = comando.executeQuery("SELECT * FROM medico WHERE email = '" + email + "'");
-			if (rs.next()){
-				senha = rs.getString("senha");
-				nome = rs.getString("nome");
-			}
+		}
+		conectar();
+		ResultSet rs;
+		String senha = "";
+		String nome = "";
 
-			if (senha ==""){
+		rs = comando.executeQuery("SELECT * FROM medico WHERE email = '" + email + "'");
+		if (rs.next()){
+			senha = rs.getString("senha");
+			nome = rs.getString("nome");
+		}
+
+		if (senha ==""){
+			if(!teste){
 				flash.error("Email não existe no banco de dados!");
 				render("@esqueciSenha");
-				// email nao existente
 			}
-			else{
+			errorFile.errorMessages.add("E-mail nao cadastrado");
+			// email nao existente
+		}else{
+			if(!teste){
+
 
 				SimpleEmail oEmail = new SimpleEmail();
 				oEmail.setHostName("smtp.gmail.com");
@@ -803,48 +853,57 @@ public class Application extends Controller {
 				flash.success("A senha foi enviada para seu e-mail com sucesso!");
 				index();			   
 			}
-
 		}
 
-		public static  void esqueciSenha() {
-			render();
-		}
+	}
 
-		public static  void alterarSenha() {
-			Medico med = medicoLogado;
-			render(med);	        
-		}
+	public static  void esqueciSenha() {
+		render();
+	}
 
-		public static  void gerarRelatorioPrivado() {
-			List<GrupoPesquisa> pList = gruposLista;
-			List<Diagnostico> dList = diagnosticosLista;
-			render(pList,dList);
-		}
+	public static  void alterarSenha() {
+		Medico med = medicoLogado;
+		render(med);	        
+	}
 
-		public static void contato(String email, String conteudo) throws EmailException{
-			fazerContato(email, conteudo, false);
-		}
+	public static  void gerarRelatorioPrivado() {
+		List<GrupoPesquisa> pList = gruposLista;
+		List<Diagnostico> dList = diagnosticosLista;
+		render(pList,dList);
+	}
 
-		public static void contatoPrivado(String email, String conteudo) throws EmailException{
-			fazerContato(email, conteudo, true);
-		}
+	public static void contato(String email, String conteudo) throws EmailException{
+		fazerContato(email, conteudo, false);
+	}
 
-		public static void fazerContato(String email, String conteudo,boolean privado)
-				throws EmailException {
+	public static void contatoPrivado(String email, String conteudo) throws EmailException{
+		fazerContato(email, conteudo, true);
+	}
 
-			validating.required(email);
-			validating.email(email);
-			validating.required(conteudo);
-			// Handle errors
-			if (!privado) {
-				if (validating.hasErrors()) {
+	public static void fazerContato(String email, String conteudo,boolean privado)
+			throws EmailException {
+		errorFile= new ErrorFile();
+		validating = new ValidationTest();
+		validating.required(email);
+		validating.required(conteudo);
+		// Handle errors
+		if(!validating.email(email))
+			errorFile.errorMessages.add("Email inválido");
+		// 
+		if (!privado) {
+			if (validating.hasErrors()||!validating.email(email)) {
+				if(!teste)
 					render("@contatoAdmin");
-				}
-			} else {
-				if (validating.hasErrors()) {
-					render("@contatoAdminPrivado");
-				}
+				errorFile.errorMessages.add("Campos inválidos ou vazios");
 			}
+		} else {
+			if (validating.hasErrors()||!validating.email(email)) {
+				if(!teste)
+					render("@contatoAdminPrivado");
+			}
+			errorFile.errorMessages.add("Campos inválidos ou vazios");
+		}
+		if(!teste){
 
 			SimpleEmail oEmail = new SimpleEmail();
 			oEmail.setHostName("smtp.gmail.com");
@@ -864,26 +923,27 @@ public class Application extends Controller {
 			else
 				telaPrincipal();
 		}
-
-		public static void contatoAdmin() {
-			render();
-		}
-
-		public static void contatoAdminPrivado() {
-			Medico med = medicoLogado;
-			render(med);
-		}
-
-		public static void adicionarConsulta(Integer prontuario) {
-			Integer prontPaciente = prontuario;
-			render(prontPaciente);
-		}
-
-		public static void verSolicitacoes(){
-			List<Medico> sList = solicitacaoLista;
-			render(sList);
-		}
-
-
-
 	}
+
+	public static void contatoAdmin() {
+		render();
+	}
+
+	public static void contatoAdminPrivado() {
+		Medico med = medicoLogado;
+		render(med);
+	}
+
+	public static void adicionarConsulta(Integer prontuario) {
+		Integer prontPaciente = prontuario;
+		render(prontPaciente);
+	}
+
+	public static void verSolicitacoes(){
+		List<Medico> sList = solicitacaoLista;
+		render(sList);
+	}
+
+
+
+}
