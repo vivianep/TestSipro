@@ -1,4 +1,4 @@
-package controllers;
+package ControllerTests;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,8 @@ import models.Paciente;
 import org.apache.commons.mail.EmailException;
 import org.junit.Before;
 import org.junit.Test;
+
+import controllers.Application;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -1,11 +1,11 @@
-package controllers;
+package ControllerTests;
 import play.data.validation.Validation;
 
 
 public class ValidationTest {
 
 	private boolean hasErrors;
-	ValidationTest(){
+	public ValidationTest(){
 		hasErrors=false;
 	}
 

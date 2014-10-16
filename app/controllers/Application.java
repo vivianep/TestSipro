@@ -22,11 +22,14 @@ import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
+import ControllerTests.ErrorFile;
+import ControllerTests.ValidationTest;
 import models.*;
+import ControllerTests.*;
 
 public class Application extends Controller {
 
-	private static ValidationTest validating;
+	public static ValidationTest validating;
 	private static Connection con;  
 	private static Statement comando;  
 
